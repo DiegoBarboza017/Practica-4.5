@@ -1,67 +1,69 @@
-# Actividad: Diseño de Propuesta de Práctica Temática (GitHub Classroom)
+# Control de 12 LEDs con teclado 4x4 en Raspberry Pi Pico W
 
-## Descripción general
-En esta actividad vas a diseñar una **propuesta de práctica pequeña** enfocada en resolver un problema realista y acotado usando uno de estos lenguajes:
+Proyecto para Raspberry Pi Pico W (RP2040) donde un teclado matricial 4x4 controla 12 LEDs mediante un mapeo directo de teclas a salidas GPIO.
 
-- Ensamblaje ARM64
-- C
-- Python
-- Bash
+## Resumen del proyecto
+- **Plataforma objetivo:** Raspberry Pi Pico W.
+- **Firmware base recibido:** C/C++ estilo Arduino (`setup()` / `loop()`) con `Keypad.h`.
+- **Enfoque de este repositorio:** organización, documentación técnica y trazabilidad de hardware sin modificar la lógica principal.
 
-La prioridad es **documentar bien la idea, su alcance, su caso de uso y su plan de pruebas** antes de implementar código.
+## Estructura del repositorio
+```text
+.
+├── CMakeLists.txt
+├── README.md
+├── docs/
+│   ├── architecture.md
+│   └── wiring.md
+├── include/
+└── src/
+    └── main.cpp
+```
 
-## Objetivo de aprendizaje
-Al finalizar esta actividad, serás capaz de:
+## Funcionalidades implementadas por el firmware
+- Teclas `1..8` encienden LEDs individuales del banco azul.
+- Tecla `9` enciende en bloque los LEDs 1..8.
+- Tecla `0` apaga en bloque los LEDs 1..8.
+- Teclas `A..D` encienden LEDs individuales del banco rojo.
+- Tecla `*` enciende el bloque rojo (`A..D`).
+- Tecla `#` apaga el bloque rojo (`A..D`).
 
-1. Definir un problema concreto y viable para una práctica corta.
-2. Justificar la elección de lenguaje según el contexto técnico.
-3. Estructurar un repositorio limpio y mantenible.
-4. Documentar caso de uso, alcance, riesgos y pruebas mínimas.
-5. (Opcional) Implementar un prototipo mínimo coherente con la documentación.
+## Lista de componentes (derivada de `diagram.json`)
+- 1 × Raspberry Pi Pico / Pico W (`wokwi-pi-pico` en el diagrama).
+- 1 × Teclado matricial 4x4 (`wokwi-membrane-keypad`).
+- 12 × LEDs (8 azules + 4 rojos).
+- 12 × Resistencias de 220 Ω (limitación de corriente de LEDs).
+- 4 × Resistencias de 1 kΩ (pull-up para filas del teclado hacia 3V3).
+- Cables de conexión y GND común.
 
-## Lenguajes permitidos
-- Ensamblaje ARM64
-- C
-- Python
-- Bash
+## Mapeo GPIO (Pico W)
+Consulta la tabla detallada en `docs/wiring.md`.
 
-## Reglas para mantener el proyecto pequeño
-- Mantén un alcance de **prototipo mínimo funcional**.
-- No uses frameworks pesados ni arquitecturas complejas.
-- Evita funcionalidades “extra” que no aporten al objetivo principal.
-- Limita entradas/salidas a casos simples y claros.
-- Si eliges ARM64 Assembly, haz un programa **muy pequeño**.
+## Ejecución en Wokwi
+1. Crea un proyecto nuevo con Raspberry Pi Pico/Pico W.
+2. Copia el contenido del firmware a `sketch.ino` o al archivo principal según el template de Wokwi.
+3. Usa el `diagram.json` proporcionado para replicar conexiones.
+4. Inicia la simulación y presiona teclas del keypad.
+5. Verifica el encendido/apagado de LEDs según el mapeo.
 
-## Temas sugeridos (ejemplos)
-- **Mini Toolkit en ARM64**
-- **Asistente de Estudio en Terminal**
-- **Reportero de Información del Sistema**
-- **Organizador de Archivos**
-- **Juego de Aprendizaje en Línea de Comandos**
+## Ejecución en hardware real
+1. Cablea el circuito exactamente como en `docs/wiring.md`.
+2. Asegura tierra común para keypad y LEDs.
+3. Compila/carga con tu flujo compatible (Arduino core RP2040 o adaptación a Pico SDK).
+4. Abre monitor serial solo si deseas depuración adicional (la lógica no depende de serial).
 
-## Entregables esperados
-1. `docs/propuesta.md` completo.
-2. `docs/caso_de_uso.md` completo.
-3. `docs/estructura_repositorio.md` revisado/adaptado.
-4. `docs/plan_de_pruebas.md` completo.
-5. `tests/test_plan.md` con checklist final.
-6. (Opcional) Prototipo mínimo en `src/` y ajuste de `scripts/run.sh`.
+## Notas sobre Wi-Fi y seguridad
+- Este firmware **no usa Wi-Fi**, aunque la placa objetivo sea Pico W.
+- Si extiendes el proyecto con conectividad, usa un archivo local de configuración y **no publiques credenciales** en Git.
 
-## Instrucciones para el estudiante
-1. Elige un problema pequeño y concreto.
-2. Selecciona lenguaje principal (ARM64, C, Python o Bash).
-3. Llena primero la documentación en `docs/`.
-4. Define pruebas manuales simples y medibles.
-5. Si el tiempo alcanza, implementa un prototipo mínimo.
-6. Verifica que tu repositorio sea claro, ordenado y ejecutable.
+## Compilación (referencia Pico SDK)
+> Importante: el `main.cpp` recibido usa `Keypad.h` estilo Arduino. Para Pico SDK puro se requiere portar GPIO/escaneo de teclado o integrar librería compatible.
 
-## Criterios generales de evaluación
-- Claridad de la propuesta y del problema a resolver.
-- Coherencia entre problema, solución y lenguaje elegido.
-- Alcance pequeño, realista y bien delimitado.
-- Calidad de documentación técnica.
-- Calidad básica del plan de pruebas.
-- Orden y mantenibilidad del repositorio.
+Pasos de referencia:
+1. Instalar toolchain ARM y CMake.
+2. Configurar `PICO_SDK_PATH`.
+3. Ejecutar:
+   - `mkdir build && cd build`
+   - `cmake ..`
+   - `make`
 
-## Nota importante
-Primero se documenta la propuesta (análisis y diseño) y después, **de forma opcional**, se implementa un prototipo pequeño.
